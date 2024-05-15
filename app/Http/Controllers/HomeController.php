@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -27,7 +28,9 @@ class HomeController extends Controller
         if (auth()->user()->is_admin) {
             return redirect()->route('admin.dashboard');
         } else {
-            return redirect()->route('user/dashboard');
+            $posts = Post::where('publish',1)->latest()->get();
+
+            return view('User.my_blog', compact('posts'));
         }
     }
 }

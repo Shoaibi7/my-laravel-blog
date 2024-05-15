@@ -11,6 +11,7 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::where('publish',1)->latest()->get();
+
         return view('User.my_blog', compact('posts'));
     }
 

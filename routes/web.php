@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,8 +41,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/posts/{post_id}/edit',[PostController::class,'edit'])->name('post.edit');
     Route::put('/posts/{post_id}/update',[PostController::class,'update'])->name('post.update');
     Route::get('/posts/{post_id}/show',[PostController::class,'show'])->name('post.show');
-
     Route::delete('/posts/{post_id}/delete',[PostController::class,'destroy'])->name('posts.destroy');
+
+    Route::post('/comment-store/{post_id}',[CommentController::class,'store'])->name('comment.store');
+    Route::post('/like-store/{post_id}',[LikeController::class,'store'])->name('like.store');
+
 
 
 });

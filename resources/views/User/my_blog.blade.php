@@ -11,25 +11,49 @@
     <div class="row">
        
         <div class="col text-center">
-            <h2>Welcome To My Blog</h2>
+            <h2>Welcome To My News Blog</h2>
             <h6>Lorem ipsum dolor sit amet consectetur adipisicing elit. Expedita optio tempora id consequuntur quia. Itaque praesentium quidem aperiam eius tempora laudantium error cupiditate ex autem, nemo quaerat repellendus veniam voluptatum?</h6>
         </div>
     </div>
     <div class="col-md-10">
         @foreach ($posts as $post)
-            <div class="post-card mb-4 p-3 bg-light rounded">
-                <div class="card-header">
-                    <h2 class="text-primary">{{ $post->title }}</h2>
-                </div>
-                <div class="card-body mb-2">
-                    <p class="text-secondary">{{ $post->content }}</p>
-                    @if ($post->image)
-                        <img src="{{ asset('storage/images/' . $post->image) }}" width="400px" class="img-fluid rounded" alt="{{ $post->title }}">
-                    @endif
-                </div>
-                <div class="card-footer text-muted">
-                    <span>Posted On {{ $post->created_at->format('M d, Y') }}</span>
-                </div>
+        <div class="post-card mb-4 p-3 bg-light rounded">
+            <div class="card-header">
+                <h2 class="text-primary">{{ $post->title }}</h2>
+            </div>
+            <div class="card-body mb-2">
+                <p class="text-secondary">{{ $post->content }}</p>
+                @if ($post->image)
+                    <img src="{{ asset('storage/images/' . $post->image) }}" width="400px" class="img-fluid rounded" alt="{{ $post->title }}">
+                @endif
+            </div>
+            <div class="card-footer text-muted">
+                <span>Posted On {{ $post->created_at->format('M d, Y') }}</span>
+                <button class="btn btn-link like-btn" data-postid="{{ $post->id }}">
+                    <i class="fas fa-thumbs-up"></i> Like
+                </button>
+                
+                <span class="likes-count">{{ $post->likes()->count() }}</span> Likes
+            </div>
+
+            <div class="comments-section mt-3">
+                <h5>Comments</h5>
+                @foreach ($post->comments as $comment)
+                    <div class="comment">
+                        <p>{{ $comment->comment }}</p>
+                        <small>Posted by: {{ $comment->user->name }}</small>
+                    </div>
+                @endforeach
+                <!-- Comment form -->
+                <form action="{{ route('comment.store', $post->id) }}" method="POST" enctype="multipart/form-data" class="mt-3">
+                    @csrf
+                    <div class="mb-3">
+                        <textarea type="text" rows="4" cols="2" class="form-control" name="comment" id="comment" placeholder="Enter Comment..." title="Please enter a comment" required></textarea>
+                        <div class="invalid-feedback">Please enter a comment</div>
+                    </div>
+                    <button type="submit" class="btn btn-sm btn-info">Save</button>
+                </form>
+            </div>
             </div>
         @endforeach
     </div>
@@ -69,3 +93,47 @@
 </footer>
 
 @endsection
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+ $(document).ready(function() {
+    // Cache the jQuery object for the like button
+    var $likeBtn = $('.like-btn');
+
+    $likeBtn.click(function(e) {
+        e.preventDefault();
+
+        // Cache the jQuery object for the clicked like button
+        var $clickedBtn = $(this);
+        var postId = $clickedBtn.data('postid');
+        
+        // Check if the user is authenticated
+        if ({{ Auth::check() ? 'true' : 'false' }}) {
+            // User is authenticated, proceed with the like action
+            $.ajax({
+                type: 'POST',
+                url: '{{ url('like-store') }}/' + postId,
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    // Update likes count on success
+                    var $likesCount = $clickedBtn.siblings('.likes-count');
+                    $likesCount.html(response.likes);
+                    window.location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        } else {
+            // User is not authenticated, prompt to log in
+            alert('Please login first to like.');
+            // You can redirect the user to the login page if needed
+            window.location.href = '{{ route('login') }}';
+        }
+    });
+});
+
+
+</script>
