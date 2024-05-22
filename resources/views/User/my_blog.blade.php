@@ -3,12 +3,12 @@
 @section('content')
 <style>
     body {
-        font-family: 'Roboto', sans-serif;
-        background-color: #f5f5f5; /* Changed background color */
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f4;
     }
 
     .carousel-inner img {
-        max-height: 400px; /* Increased max-height for better visibility */
+        max-height: 350px;
         object-fit: cover;
     }
 
@@ -21,10 +21,10 @@
     .welcome-section {
         background: linear-gradient(45deg, #ff8c00, #ff6347);
         color: #fff;
-        padding: 80px 0; /* Increased padding */
+        padding: 60px 0;
         text-align: center;
-        border-radius: 20px; /* Increased border-radius */
-        margin-bottom: 50px; /* Increased margin */
+        border-radius: 15px;
+        margin-bottom: 30px;
     }
 
     .post-card {
@@ -32,57 +32,53 @@
         border: 1px solid #e1e1e1;
         border-radius: 10px;
         margin-bottom: 30px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Increased box-shadow */
-        transition: transform 0.3s, box-shadow 0.3s; /* Added box-shadow transition */
-        padding: 20px; /* Increased padding */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+        padding: 15px;
     }
 
     .post-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
     }
 
     .post-card h2 {
         color: #333;
-        font-size: 28px; /* Increased font size */
-        margin-bottom: 10px; /* Added margin */
+        font-size: 24px;
     }
 
     .post-card p {
         color: #555;
-        line-height: 1.6; /* Improved line-height for better readability */
-        margin-bottom: 15px; /* Added margin */
     }
 
     .post-card img {
+        margin: 15px 0;
         border-radius: 10px;
-        width: 100%; /* Ensured image width is 100% */
-        height: 350px; /* Added to maintain aspect ratio */
-        margin-bottom: 20px; /* Added margin */
     }
 
     .post-card .card-footer {
-        background: #f9f9f9; /* Changed background color */
+        background: #fafafa;
         border-top: 1px solid #e1e1e1;
-        padding: 15px 20px; /* Increased padding */
+        padding: 10px 15px;
     }
 
     .post-card .card-footer span {
         color: #888;
         font-size: 14px;
-        margin-right: 10px; /* Added margin */
     }
 
     .share-buttons a {
-        margin-right: 15px; /* Increased margin */
+        margin-right: 10px;
         text-decoration: none;
+    }
+
+    .share-buttons a:hover {
+        text-decoration: underline;
     }
 
     .footer {
         background: #232526;
         color: #f8f9fa;
-        padding: 60px 0; /* Increased padding */
-        border-top: 3px solid #ff8c00; /* Added border-top */
+        padding: 40px 0;
     }
 
     .footer a {
@@ -95,18 +91,16 @@
     }
 
     .footer .quick-links a {
-        margin-right: 20px; /* Increased margin */
-        font-size: 16px; /* Increased font size */
+        margin-right: 15px;
     }
 
     .footer .about p {
         color: #ccc;
-        line-height: 1.6; /* Improved line-height for better readability */
     }
 
     .footer-bottom {
         background: #414345;
-        padding: 15px 0; /* Increased padding */
+        padding: 10px 0;
         color: #ccc;
     }
 </style>
@@ -231,10 +225,11 @@
 </footer>
 @endsection
 
-@section('scripts')
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 <script>
-    $(document).ready(function() {
+ $(document).ready(function() {
+    
         $('.share-buttons a').on('click', function(e) {
             e.preventDefault();
             var width = 575,
@@ -242,39 +237,53 @@
                 left = ($(window).width() - width) / 2,
                 top = ($(window).height() - height) / 2,
                 url = this.href,
-                opts = 'status=1,width=' + width + ',height=' + height + ',top=' + top + ',left=' + left;
+                opts = 'status=1' +
+                       ',width=' + width +
+                       ',height=' + height +
+                       ',top=' + top +
+                       ',left=' + left;
             window.open(url, 'share', opts);
             return false;
         });
 
-        var $likeBtn = $('.like-btn');
 
-        $likeBtn.click(function(e) {
-            e.preventDefault();
-            var $clickedBtn = $(this);
-            var postId = $clickedBtn.data('postid');
-            
-            if ({{ Auth::check() ? 'true' : 'false' }}) {
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ url('like-store') }}/' + postId,
-                    data: {
-                        "_token": "{{ csrf_token() }}"
-                    },
-                    success: function(response) {
-                        var $likesCount = $clickedBtn.siblings('.likes-count');
-                        $likesCount.html(response.likes);
-                        window.location.reload();
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(xhr.responseText);
-                    }
-                });
-            } else {
-                alert('Please login first to like.');
-                window.location.href = '{{ route('login') }}';
-            }
-        });
+    // Cache the jQuery object for the like button
+    var $likeBtn = $('.like-btn');
+
+    $likeBtn.click(function(e) {
+        e.preventDefault();
+
+        // Cache the jQuery object for the clicked like button
+        var $clickedBtn = $(this);
+        var postId = $clickedBtn.data('postid');
+        
+        // Check if the user is authenticated
+        if ({{ Auth::check() ? 'true' : 'false' }}) {
+            // User is authenticated, proceed with the like action
+            $.ajax({
+                type: 'POST',
+                url: '{{ url('like-store') }}/' + postId,
+                data: {
+                    "_token": "{{ csrf_token() }}"
+                },
+                success: function(response) {
+                    // Update likes count on success
+                    var $likesCount = $clickedBtn.siblings('.likes-count');
+                    $likesCount.html(response.likes);
+                    window.location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.error(xhr.responseText);
+                }
+            });
+        } else {
+            // User is not authenticated, prompt to log in
+            alert('Please login first to like.');
+            // You can redirect the user to the login page if needed
+            window.location.href = '{{ route('login') }}';
+        }
     });
+});
+
+
 </script>
-@endsection
