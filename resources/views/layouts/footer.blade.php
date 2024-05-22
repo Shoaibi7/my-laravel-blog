@@ -25,6 +25,6 @@
 
 <footer class="footer-bottom text-center">
     <div class="container">
-        <p>&copy; <?php echo date("Y"); ?> My Blog. All rights reserved.</p>
+        <p>&copy; <?php echo date("Y"); ?> My News Blog. All rights reserved.</p>
     </div>
 </footer>

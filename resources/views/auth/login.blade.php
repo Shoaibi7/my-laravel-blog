@@ -1,6 +1,52 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f5f5f5;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background-color: #17a2b8;
+        color: #fff;
+        border-radius: 10px 10px 0 0;
+        font-size: 20px;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .form-check-label {
+        color: #333;
+    }
+
+    .btn-primary {
+        background-color: #ff8c00;
+        border-color: #ff8c00;
+    }
+
+    .btn-primary:hover {
+        background-color: #ff6347;
+        border-color: #ff6347;
+    }
+
+    .btn-link {
+        color: #17a2b8;
+    }
+
+    .btn-link:hover {
+        color: #0b7285;
+    }
+</style>
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
